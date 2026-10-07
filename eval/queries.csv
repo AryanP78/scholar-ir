@@ -1,0 +1,41 @@
+query_id,text,type,split,description
+F01,survey of recommender systems,foundational,dev,"Surveys/overviews of recommender systems; 2 = a survey or broad foundational treatment, 1 = a recommender-systems paper with substantial overview content."
+F02,word embeddings distributed representations of words,foundational,test,Learning dense vector representations of words (word2vec/GloVe-style and their analyses).
+F03,introduction to deep reinforcement learning,foundational,dev,"Introductions, surveys or foundational methods of deep RL (DQN, policy gradients with deep nets)."
+F04,convolutional neural networks for image classification,foundational,test,CNN architectures/training for image classification.
+F05,overview of community detection in networks,foundational,dev,Community detection / graph clustering methods or surveys.
+F06,learning to rank for information retrieval,foundational,test,Learning-to-rank methods (pointwise/pairwise/listwise) for ranking documents.
+F07,seminal work on generative adversarial networks,foundational,dev,"Core GAN methods, training stability, theory or surveys of GANs."
+F08,dropout regularization in neural networks,foundational,test,Dropout and closely related stochastic regularisation for neural networks.
+F09,tutorial on graph neural networks,foundational,dev,"Tutorials, surveys or core methods of graph neural networks (GCN, message passing)."
+F10,sequence to sequence learning for machine translation,foundational,test,Encoder-decoder / seq2seq neural machine translation.
+F11,review of sentiment analysis methods,foundational,dev,Sentiment analysis / opinion mining methods or reviews.
+F12,knowledge graph embedding,foundational,test,"Embedding entities and relations of knowledge graphs (TransE-style, link prediction)."
+F13,classic collaborative filtering with matrix factorization,foundational,dev,Matrix-factorisation collaborative filtering for recommendation.
+F14,batch normalization for training deep networks,foundational,test,Batch normalisation and normalisation layers for deep network training.
+F15,survey of object detection,foundational,dev,Object detection methods (two-stage/one-stage detectors) or surveys.
+F16,attention mechanism in neural machine translation,foundational,test,Attention mechanisms for NMT / encoder-decoder attention.
+F17,history of question answering systems,foundational,dev,"Question answering systems: surveys, foundational QA methods and datasets."
+F18,influence maximization in social networks,foundational,test,Influence maximisation / information diffusion seed selection in social networks.
+F19,foundational papers on variational autoencoders,foundational,dev,VAE methods and theory (variational inference with neural encoders/decoders).
+F20,query optimization in relational databases,foundational,test,"Query optimisation (cost models, join ordering, cardinality estimation) in relational DBMSs."
+R01,retrieval-augmented generation for large language models,recent,dev,RAG: LLMs that retrieve documents to ground generation.
+R02,hallucination detection in LLM outputs,recent,test,Detecting or measuring hallucinations / factual errors of LLM generations.
+R03,recent advances in vision-language models,recent,dev,Recent vision-language pretraining/models (CLIP-era and later multimodal LLMs).
+R04,instruction tuning of language models,recent,test,Instruction tuning / supervised fine-tuning of LMs on instructions.
+R05,parameter-efficient fine-tuning with LoRA adapters,recent,dev,"LoRA, adapters, prefix tuning and other parameter-efficient fine-tuning."
+R06,diffusion models for text-to-image generation,recent,test,Diffusion-based text-to-image synthesis and editing.
+R07,dense retrieval with contrastive learning for passage ranking,recent,dev,Dense (bi-encoder) retrievers trained contrastively for passage retrieval/ranking.
+R08,LLM agents that use tools,recent,test,LLM-based agents that call tools/APIs or act in environments.
+R09,chain-of-thought prompting for reasoning,recent,dev,Chain-of-thought / step-by-step prompting to improve LLM reasoning.
+R10,state space models for long sequences,recent,test,"Structured state space models (S4, Mamba-style) for long-range sequence modelling."
+R11,mixture-of-experts for scaling language models,recent,dev,Sparse mixture-of-experts layers/routing for large models.
+R12,latest work on privacy attacks in federated learning,recent,test,"Privacy attacks (gradient inversion, membership/property inference) against federated learning."
+R13,neural radiance fields for 3D reconstruction,recent,dev,NeRF and neural implicit radiance fields for 3D reconstruction / novel view synthesis.
+R14,LLM-based recommender systems,recent,test,Using large language models for recommendation.
+R15,large language models as evaluators,recent,dev,LLM-as-a-judge: using LLMs to evaluate outputs or texts.
+R16,text-to-SQL with large language models,recent,test,Text-to-SQL / NL interfaces to databases using LLMs.
+R17,graph transformers 2022,recent,dev,"Transformer architectures for graphs (graph transformers), 2021 onward."
+R18,approximate nearest neighbor search for embedding vectors,recent,test,"ANN / vector search indexes (graph-based, quantisation) for dense embeddings."
+R19,multimodal misinformation detection on social media,recent,dev,Detecting fake news / misinformation using text+image signals on social media.
+R20,new benchmarks for code generation,recent,test,Benchmarks and evaluation datasets for code generation models.

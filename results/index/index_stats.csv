@@ -1,0 +1,4 @@
+zone,terms,postings,positions,avg_doc_len,index_MB,docid_raw_MB,docid_gap_vb_MB,docid_compression_ratio
+title,38355,635011,645653,8.1,13.5,2.54,0.96,2.64
+abstract,127263,5960134,8534933,106.7,131.3,23.84,7.01,3.4
+all,132278,6061229,9180586,114.8,135.6,24.24,7.14,3.4

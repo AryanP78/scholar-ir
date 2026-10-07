@@ -1,0 +1,26 @@
+request_id,request,gold_terms,gold_zone,gold_year_min,gold_year_max,gold_categories,gold_intent
+N01,Find recent papers on dense retrieval for open-domain question answering published since 2021,dense;retrieval;open-domain;question;answering,all,2021,,,recent
+N02,Seminal work on word embeddings,word;embeddings,all,,,,foundational
+N03,Surveys of graph neural networks published before 2020,graph;neural;networks,all,,2019,,foundational
+N04,Papers about BERT fine-tuning for sentiment classification between 2019 and 2021,bert;fine-tuning;sentiment;classification,all,2019,2021,,specific
+N05,Latest research on hallucination in large language models,hallucination;large;language;models,all,,,,recent
+N06,Information retrieval papers on query expansion with pseudo-relevance feedback,query;expansion;pseudo-relevance;feedback,all,,,cs.IR,specific
+N07,Computer vision papers on vision transformers since 2022,vision;transformers,all,2022,,cs.CV,recent
+N08,Classic collaborative filtering approaches for recommender systems,collaborative;filtering;recommender;systems,all,,,,foundational
+N09,Database research on learned cardinality estimation,learned;cardinality;estimation,all,,,cs.DB,specific
+N10,What are new benchmarks for evaluating code generation by LLMs?,benchmarks;evaluating;code;generation;llms,all,,,,recent
+N11,"Papers with ""knowledge distillation"" in the title",knowledge;distillation,title,,,,specific
+N12,Influence maximization in social networks published in 2015,influence;maximization;social;networks,all,2015,2015,,specific
+N13,An overview of privacy attacks on federated learning,privacy;attacks;federated;learning,all,,,,foundational
+N14,Recent NLP work on instruction tuning,instruction;tuning,all,,,cs.CL,recent
+N15,Early work on deep reinforcement learning for Atari games before 2016,deep;reinforcement;learning;atari;games,all,,2015,,foundational
+N16,Contrastive learning for image representations from 2019 to 2021,contrastive;learning;image;representations,all,2019,2021,,specific
+N17,Text-to-SQL with large language models,text-to-sql;large;language;models,all,,,,specific
+N18,Find highly cited papers about generative adversarial networks,generative;adversarial;networks,all,,,,foundational
+N19,Graph-based approximate nearest neighbor search methods,graph-based;approximate;nearest;neighbor;search,all,,,,specific
+N20,Latest papers on mixture-of-experts language models after 2022,mixture-of-experts;language;models,all,2023,,,recent
+N21,Machine learning papers on dropout as a Bayesian approximation,dropout;bayesian;approximation,all,,,cs.LG,specific
+N22,Explore work around fairness in ranking and recommendation,fairness;ranking;recommendation,all,,,,exploratory
+N23,"Neural machine translation with attention, published up to 2017",neural;machine;translation;attention,all,,2017,,specific
+N24,State-of-the-art methods for 3D reconstruction with neural radiance fields,3d;reconstruction;neural;radiance;fields,all,,,,recent
+N25,Community detection papers in social and information networks (cs.SI),community;detection,all,,,cs.SI,specific

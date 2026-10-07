@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scholar-ir"
+version = "0.1.0"
+description = "Structure-aware vertical search over arXiv CS papers (CSD358 IR hackathon, track T6)"
+requires-python = ">=3.10"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+scholar_ir = ["resources/*.txt"]

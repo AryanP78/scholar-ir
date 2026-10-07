@@ -1,0 +1,146 @@
+# Scholar-IR configuration. Every tunable number lives here (no magic numbers in code).
+seed: 42
+
+paths:
+  raw_dir: data/raw
+  processed_dir: data/processed
+  cache_dir: data/cache
+  results_dir: results
+  eval_dir: eval
+  papers: data/processed/papers.parquet
+  citations: data/processed/citations.parquet
+  index: data/processed/index.pkl
+
+data:
+  # "hf"   = stream the Hugging Face mirror of the Kaggle/Cornell arXiv metadata dump
+  # "file" = read the Kaggle file arxiv-metadata-oai-snapshot.json (one JSON object per line)
+  source: hf
+  hf_dataset: CCRss/arXiv_dataset
+  hf_split: train
+  kaggle_file: data/raw/arxiv-metadata-oai-snapshot.json
+  categories: [cs.IR, cs.CL, cs.LG, cs.AI, cs.CV, cs.DB, cs.SI]
+  min_year: 2010
+  max_year: null            # null = no upper bound
+  target_size: 80000
+  reservoir_per_year: 12000 # uniform reservoir kept per year during the single streaming pass
+  year_alloc_power: 0.5     # per-year quota proportional to (papers in that year)^power (0 = equal, 1 = proportional)
+  min_abstract_words: 30
+
+citations:
+  api_base: https://api.openalex.org/works
+  doi_prefix: "10.48550/arxiv."
+  batch_size: 100           # OpenAlex OR-filter limit is 100 values
+  per_page: 100
+  sleep_seconds: 0.25       # polite delay between requests (limit is 100 req/s; we stay far below)
+  max_retries: 6
+  backoff_base: 2.0
+  timeout_seconds: 60
+  select: id,doi,title,cited_by_count,publication_year,referenced_works
+  landing_prefix: "http://arxiv.org/abs/"   # OpenAlex stores arXiv landing pages with http (probe 2026-10-07)
+  min_title_jaccard: 0.8    # title word-set Jaccard needed to accept a landing-page / title-search match
+  min_doi_title_jaccard: 0.5   # below this an exact arXiv-DOI hit is kept but flagged doi_title_mismatch
+  exact_title_jaccard: 0.95   # titles this similar are accepted regardless of the year gap
+  max_year_gap: 3           # |OpenAlex publication_year - arXiv first-submission year| allowed
+  max_title_search: 800     # pass-3 cap per run (title search costs 10x a filter call; keeps a run under $1)
+  count_source: s2_then_openalex   # Semantic Scholar count when found (title-checked), else OpenAlex
+  s2: {batch_size: 500, sleep_seconds: 6.0, max_retries: 10, backoff_base: 2.0, min_title_jaccard: 0.6}
+  missing_policy: median    # authority for papers with no citation data: "median" (cohort median) or "zero"
+
+preprocess:
+  stem: true
+  stopwords: true
+  min_token_len: 1
+  domain_stopwords: [paper, propose, proposed, proposes, show, shows, shown, method, methods,
+                     approach, approaches, using, based, present, presents, results, also, use, used]
+
+index:
+  zones: [title, abstract]
+  skip_pointers: true
+  champion_r: 500
+
+ranking:
+  candidate_pool: 200       # N candidates re-ranked by the net score
+  bm25:
+    k1: 1.2
+    b: 0.75
+    grid_k1: [0.8, 1.2, 1.5, 2.0]
+    grid_b: [0.3, 0.5, 0.75, 0.9]
+  bm25f:
+    k1: 1.2
+    w: {title: 2.5, abstract: 1.0}
+    b: {title: 0.5, abstract: 0.75}
+    grid_w_title: [1.0, 1.5, 2.5, 4.0]
+  linear_zone:
+    g: {title: 0.4, abstract: 0.6}
+  index_elimination:
+    idf_threshold: 1.5      # drop query terms with idf (ln) below this
+    min_match_fraction: 0.5 # many-term queries: require at least this fraction of terms
+    min_terms_for_match_rule: 4
+
+authority:
+  min_cohort_size: 200      # pool adjacent years until a cohort has at least this many papers
+  pagerank_damping: 0.85
+  pagerank_tol: 1.0e-9
+  pagerank_max_iter: 300
+
+net_score:
+  fixed_lambda: 0.3         # S4-S6; tuned on dev
+  combine: additive         # additive | multiplicative
+
+adaptive:
+  lambda_min: 0.0
+  lambda_max: 0.6
+  foundational_cues: [survey, overview, seminal, foundational, classic, introduction, tutorial,
+                      original, history, review, landmark, pioneering, influential, fundamentals,
+                      "well-known", "widely-used", standard, canonical]
+  recent_cues: [recent, latest, new, novel, emerging, "state-of-the-art", sota, current, modern, "cutting-edge"]
+  recent_year_cue_from: 2020  # a year token >= this in the query counts as a recency cue
+  # intent-only words: they signal WHAT KIND of paper is wanted, not the topic, so they feed lambda(q)
+  # but are removed from the ranked query terms (for every system, baseline included). Document-type
+  # words such as survey / overview / tutorial stay in the query because they do describe the paper.
+  intent_only_terms: [seminal, classic, foundational, landmark, influential, pioneering, "well-known",
+                      recent, latest, new, novel, emerging, "state-of-the-art", sota, current, modern,
+                      "cutting-edge", early, work, works, papers]
+  era_terms: [llm, llms, "large language model", "large language models", chatgpt, gpt-4, "gpt-4",
+              instruction, rlhf, diffusion, "retrieval-augmented", rag, "in-context", "chain-of-thought",
+              mamba, "vision-language", lora, "mixture-of-experts"]
+  # logistic weights over [bias, foundational_cue, recent_cue, mean_idf_z, n_terms_z, flatness, llm_found, llm_recent]
+  # defaults are hand-set priors; `make tune` refits them on the DEV split only.
+  weights: [0.0, 2.5, -2.5, -0.8, -0.3, 0.8, 0.0, 0.0]
+  use_llm_feature: false
+  # feature standardisation (replaced by DEV-query statistics when `make tune` runs)
+  norm: {idf_mean: 4.0, idf_std: 1.5, len_mean: 3.0, len_std: 1.5}
+
+llm:
+  provider: gemini          # gemini | anthropic | openai | none
+  model:
+    # fallback chain (2026-10-07: the full "flash" models were returning 503 "high demand" for hours;
+    # the lite models answer reliably and are plenty for query translation and 5-abstract summaries)
+    gemini: [gemini-3.5-flash-lite, gemini-flash-lite-latest, gemini-3.1-flash-lite, gemini-3.7-flash, gemini-3.5-flash, gemini-3.8-flash]
+    anthropic: claude-sonnet-4-5
+    openai: gpt-4o-mini
+  temperature: 0
+  max_retries: 8
+  max_passes: 3               # full passes over the model chain before giving up
+  timeout_seconds: 60
+  cache_dir: data/cache/llm
+
+rag:
+  k: 5
+  system_prompt: >-
+    Answer ONLY using the provided papers. Every sentence must end with one or more citations in the
+    form [arXiv:ID] using only the IDs provided. If the papers do not contain the answer, say so. Do
+    not use outside knowledge. Do not invent IDs.
+
+checker:
+  alpha: 0.5
+  tau: 0.35
+
+evaluation:
+  pool_depth: 15
+  pool_systems: [S1, S2, S3, S4, S5, S6, S7]
+  k_values: [5, 10, 20]
+  recent_window_years: 3
+  bootstrap_samples: 10000
+  relevant_grade: 1          # grade >= this counts as relevant for binary metrics
+  citerec_min_refs: 5        # held-out papers need at least this many references inside the corpus

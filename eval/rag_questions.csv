@@ -1,0 +1,21 @@
+question_id,question,split
+A01,How does dense passage retrieval differ from sparse retrieval such as BM25?,dev
+A02,What causes hallucinations in large language models and how can they be detected?,test
+A03,How do graph neural networks aggregate information from neighbouring nodes?,dev
+A04,What are the main algorithmic approaches to influence maximization in social networks?,test
+A05,How is knowledge distillation used to compress neural networks?,dev
+A06,Which techniques make fine-tuning of large language models parameter-efficient?,test
+A07,How do diffusion models generate images from text prompts?,dev
+A08,What is chain-of-thought prompting and why does it improve reasoning?,test
+A09,How do recommender systems deal with the cold-start problem?,dev
+A10,What are the main challenges in text-to-SQL generation?,test
+A11,How is contrastive learning used to learn visual representations without labels?,dev
+A12,What privacy attacks threaten federated learning?,test
+A13,How can machine learning improve cardinality estimation in query optimizers?,dev
+A14,Which signals are used to detect fake news on social media?,test
+A15,How do vision transformers process an image?,dev
+A16,How does pseudo-relevance feedback expand queries in information retrieval?,test
+A17,How are knowledge graph embeddings trained for link prediction?,dev
+A18,What are mixture-of-experts models and why do they scale efficiently?,test
+A19,How do neural radiance fields represent a 3D scene?,dev
+A20,Which benchmarks are used to evaluate code generation models?,test
