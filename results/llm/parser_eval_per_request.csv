@@ -1,0 +1,76 @@
+request_id,parser,source,compiled,term_f1,year_min_ok,year_max_ok,categories_ok,zone_ok,intent_ok,filters_exact
+N01,rule,rule,dense retrieval open-domain question answering year:>=2021,1.0,True,True,True,True,True,True
+N01,llm,llm,"""dense retrieval"" ""open-domain question answering"" year:>=2021",1.0,True,True,True,True,True,True
+N01,llm+guard,llm+guard,"""dense retrieval"" ""open-domain question answering"" year:>=2021",1.0,True,True,True,True,True,True
+N02,rule,rule,embeddings,0.6666666666666666,True,True,True,True,True,True
+N02,llm,llm,"""word embeddings""",1.0,True,True,True,True,True,True
+N02,llm+guard,llm+guard,"""word embeddings""",1.0,True,True,True,True,True,True
+N03,rule,rule,graph neural networks year:<=2019,1.0,True,True,True,True,True,True
+N03,llm,llm,"survey ""graph neural networks"" year:<=2019",0.8571428571428571,True,True,True,True,True,True
+N03,llm+guard,llm+guard,"survey ""graph neural networks"" year:<=2019",0.8571428571428571,True,True,True,True,True,True
+N04,rule,rule,bert fine-tuning sentiment classification year:2019..2021,1.0,True,True,True,True,True,True
+N04,llm,llm,"BERT ""fine-tuning"" ""sentiment classification"" year:2019..2021",1.0,True,True,True,True,True,True
+N04,llm+guard,llm+guard,"BERT ""fine-tuning"" ""sentiment classification"" year:2019..2021",1.0,True,True,True,True,True,True
+N05,rule,rule,hallucination large language models,1.0,True,True,True,True,True,True
+N05,llm,llm,"hallucination ""large language models""",1.0,True,True,True,True,True,True
+N05,llm+guard,llm+guard,"hallucination ""large language models""",1.0,True,True,True,True,True,True
+N06,rule,rule,query expansion pseudo-relevance feedback cat:cs.IR,1.0,True,True,True,True,True,True
+N06,llm,llm,"expansion feedback ""information retrieval"" ""query expansion"" ""pseudo-relevance feedback"" cat:cs.IR",0.8571428571428571,True,True,True,True,False,True
+N06,llm+guard,llm+guard,"expansion feedback ""information retrieval"" ""query expansion"" ""pseudo-relevance feedback"" cat:cs.IR",0.8571428571428571,True,True,True,True,False,True
+N07,rule,rule,vision transformers year:>=2022 cat:cs.CV,1.0,True,True,True,True,True,True
+N07,llm,llm,"transformers ""vision transformers"" year:>=2022 cat:cs.CV",1.0,True,True,True,True,True,True
+N07,llm+guard,llm+guard,"transformers ""vision transformers"" year:>=2022 cat:cs.CV",1.0,True,True,True,True,True,True
+N08,rule,rule,collaborative filtering recommender systems,1.0,True,True,True,True,True,True
+N08,llm,llm,"filtering ""collaborative filtering"" ""recommender systems"" cat:cs.IR",1.0,True,True,False,True,True,False
+N08,llm+guard,llm+guard,"filtering ""collaborative filtering"" ""recommender systems""",1.0,True,True,True,True,True,True
+N09,rule,rule,learned cardinality estimation cat:cs.DB,1.0,True,True,True,True,True,True
+N09,llm,llm,"cardinality estimation ""learned cardinality estimation"" cat:cs.DB",1.0,True,True,True,True,False,True
+N09,llm+guard,llm+guard,"cardinality estimation ""learned cardinality estimation"" cat:cs.DB",1.0,True,True,True,True,False,True
+N10,rule,rule,benchmarks evaluating code generation llms,1.0,True,True,True,True,True,True
+N10,llm,llm,"benchmarks evaluating generation ""code generation"" ""large language models"" year:2022..2023 cat:cs.CL cat:cs.AI cat:cs.LG",0.6666666666666666,False,False,False,True,True,False
+N10,llm+guard,llm+guard,"benchmarks evaluating generation ""code generation"" ""large language models""",0.6666666666666666,True,True,True,True,True,True
+N11,rule,rule,"title:""knowledge distillation""",1.0,True,True,True,True,True,True
+N11,llm,llm,"title:""knowledge distillation""",1.0,True,True,True,True,True,True
+N11,llm+guard,llm+guard,"title:""knowledge distillation""",1.0,True,True,True,True,True,True
+N12,rule,rule,influence maximization social networks year:2015..2015,1.0,True,True,True,True,True,True
+N12,llm,llm,"maximization networks ""influence maximization"" ""social networks"" year:2015..2015 cat:cs.SI",1.0,True,True,False,True,True,False
+N12,llm+guard,llm+guard,"maximization networks ""influence maximization"" ""social networks"" year:2015..2015",1.0,True,True,True,True,True,True
+N13,rule,rule,privacy attacks federated learning,1.0,True,True,True,True,True,True
+N13,llm,llm,"privacy attacks federated learning ""privacy attacks"" ""federated learning"" cat:cs.LG cat:cs.AI",1.0,True,True,False,True,True,False
+N13,llm+guard,llm+guard,"privacy attacks federated learning ""privacy attacks"" ""federated learning""",1.0,True,True,True,True,True,True
+N14,rule,rule,instruction tuning cat:cs.CL,1.0,True,True,True,True,True,True
+N14,llm,llm,"tuning ""instruction tuning"" year:>=2022 cat:cs.CL",1.0,False,True,True,True,True,False
+N14,llm+guard,llm+guard,"tuning ""instruction tuning"" cat:cs.CL",1.0,True,True,True,True,True,True
+N15,rule,rule,deep reinforcement learning atari games year:<=2015,1.0,True,True,True,True,False,True
+N15,llm,llm,"Atari games ""deep reinforcement learning"" year:<=2015 cat:cs.LG cat:cs.AI",1.0,True,True,False,True,True,False
+N15,llm+guard,llm+guard,"Atari games ""deep reinforcement learning"" year:<=2015",1.0,True,True,True,True,True,True
+N16,rule,rule,contrastive learning image representations year:2019..2021,1.0,True,True,True,True,True,True
+N16,llm,llm,"learning representations ""contrastive learning"" ""image representations"" year:2019..2021 cat:cs.CV cat:cs.LG",1.0,True,True,False,True,False,False
+N16,llm+guard,llm+guard,"learning representations ""contrastive learning"" ""image representations"" year:2019..2021",1.0,True,True,True,True,False,True
+N17,rule,rule,text-to-sql large language models,1.0,True,True,True,True,True,True
+N17,llm,llm,"models ""Text-to-SQL"" ""large language models"" cat:cs.DB cat:cs.CL cat:cs.AI",1.0,True,True,False,True,True,False
+N17,llm+guard,llm+guard,"models ""Text-to-SQL"" ""large language models""",1.0,True,True,True,True,True,True
+N18,rule,rule,generative adversarial networks,1.0,True,True,True,True,True,True
+N18,llm,llm,"networks ""generative adversarial networks"" cat:cs.LG cat:cs.CV",1.0,True,True,False,True,True,False
+N18,llm+guard,llm+guard,"networks ""generative adversarial networks""",1.0,True,True,True,True,True,True
+N19,rule,rule,graph-based approximate nearest neighbor search,1.0,True,True,True,True,True,True
+N19,llm,llm,"neighbor search methods ""Graph-based approximate nearest neighbor search"" cat:cs.IR cat:cs.DB",1.0,True,True,False,True,False,False
+N19,llm+guard,llm+guard,"neighbor search methods ""Graph-based approximate nearest neighbor search""",1.0,True,True,True,True,False,True
+N20,rule,rule,mixture-of-experts language models year:>=2023,1.0,True,True,True,True,True,True
+N20,llm,llm,"mixture experts ""mixture-of-experts language models"" year:>=2023 cat:cs.CL cat:cs.LG",1.0,True,True,False,True,True,False
+N20,llm+guard,llm+guard,"mixture experts ""mixture-of-experts language models"" year:>=2023",1.0,True,True,True,True,True,True
+N21,rule,rule,machine learning dropout bayesian approximation,0.7499999999999999,True,True,False,True,True,False
+N21,llm,llm,"dropout approximation ""bayesian approximation"" cat:cs.LG",1.0,True,True,True,True,False,True
+N21,llm+guard,llm+guard,"dropout approximation ""bayesian approximation""",1.0,True,True,False,True,False,False
+N22,rule,rule,explore around fairness ranking recommendation,0.7499999999999999,True,True,True,True,False,True
+N22,llm,llm,"fairness ""ranking"" ""recommendation"" cat:cs.IR",1.0,True,True,False,True,True,False
+N22,llm+guard,llm+guard,"fairness ""ranking"" ""recommendation""",1.0,True,True,True,True,True,True
+N23,rule,rule,neural machine translation attention year:<=2017,1.0,True,True,True,True,True,True
+N23,llm,llm,"neural translation ""neural machine translation"" ""with attention"" year:<=2017 cat:cs.CL",1.0,True,True,False,True,False,False
+N23,llm+guard,llm+guard,"neural translation ""neural machine translation"" ""with attention"" year:<=2017",1.0,True,True,True,True,False,True
+N24,rule,rule,state-of-the-art 3d reconstruction neural radiance fields,0.7692307692307693,True,True,True,True,True,True
+N24,llm,llm,"methods reconstruction ""3D reconstruction"" ""neural radiance fields"" year:2022..2023 cat:cs.CV",1.0,False,False,False,True,True,False
+N24,llm+guard,llm+guard,"methods reconstruction ""3D reconstruction"" ""neural radiance fields""",1.0,True,True,True,True,True,True
+N25,rule,rule,community detection social information networks cat:cs.SI,0.5714285714285715,True,True,True,True,True,True
+N25,llm,llm,"detection ""community detection"" cat:cs.SI",1.0,True,True,True,True,False,True
+N25,llm+guard,llm+guard,"detection ""community detection"" cat:cs.SI",1.0,True,True,True,True,False,True

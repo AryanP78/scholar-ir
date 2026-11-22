@@ -35,7 +35,22 @@ generative answers must be attributable to sources [8, 9].
 first submitted 2010–2023 (the Hugging Face mirror of the Cornell arXiv dump is a late-2023 snapshot),
 sampled per year in one streaming pass so that every year is represented:
 
-*(not generated yet: `results/data/papers_per_year.csv`)*
+| year | population | sampled |
+|---|---|---|
+| 2010 | 1603 | 1603 |
+| 2011 | 2552 | 2168 |
+| 2012 | 4223 | 2789 |
+| 2013 | 5236 | 3105 |
+| 2014 | 5515 | 3186 |
+| 2015 | 7209 | 3643 |
+| 2016 | 10640 | 4426 |
+| 2017 | 15332 | 5313 |
+| 2018 | 23844 | 6625 |
+| 2019 | 34036 | 7915 |
+| 2020 | 45436 | 9145 |
+| 2021 | 50013 | 9595 |
+| 2022 | 54853 | 10049 |
+| 2023 | 59196 | 10438 |
 
 Citations come from OpenAlex [10]. Matching arXiv papers to OpenAlex is harder than it looks: OpenAlex
 merges preprints into their published versions (so arXiv-DOI lookup misses many famous papers),
@@ -43,9 +58,15 @@ and our probes found mis-merged records (the landing-page lookup for BERT return
 paper with 45k citations; the arXiv DOI of the RAG paper carries a wrong title). We therefore match in
 three passes — arXiv DOI, arXiv landing page, title search — and title-check every non-DOI match.
 
-*(not generated yet: `results/data/citation_coverage.csv`)*
+| year | papers | matched | median_citations | mean_citations | coverage_pct |
+|---|---|---|---|---|---|
+| ALL | 80000 | 79238 | 15.000 | 103.085 | 99.000 |
 
-*(not generated yet: `results/data/citation_match_methods.csv`)*
+| method | papers |
+|---|---|
+| doi | 58891 |
+| none | 20631 |
+| doi_title_mismatch | 478 |
 
 ## 2. How we used IR
 
@@ -53,7 +74,7 @@ three passes — arXiv DOI, arXiv landing page, title search — and title-check
 |---|---|---|
 | Deciding what a document is; zones; parametric fields | `data_loader.build_subset`, `index.zone_tokens` | paper = title zone + abstract zone + year + categories; year = *first* submission (needed for age normalisation) |
 | Tokenisation, case folding, stop words, Porter stemming | `preprocess.Analyzer` | one pipeline for docs and queries; stop words leave positional gaps so phrases with stop words still match |
-| Inverted index (dictionary + postings), positional index | `index.build_zone_index` (sort-based construction into flat arrays: df, pointer, doc ids, tf, positions) | compact, loads in 0.270 s; builds in 27.800 s |
+| Inverted index (dictionary + postings), positional index | `index.build_zone_index` (sort-based construction into flat arrays: df, pointer, doc ids, tf, positions) | compact, loads in 0.060 s; builds in 12.000 s |
 | Zone indexes and parametric indexes | `index.Index` (`title`, `abstract`, flat `all`; year → docs, category → docs) | zone-restricted queries (`title:`), filters (`year:`, `cat:`), BM25F |
 | Boolean retrieval, merge intersection, query optimisation | `boolean_search.intersect`, `intersect_many(order_by_df=True)` | Westlaw-style queries; postings touched are counted |
 | Skip pointers | `boolean_search.intersect_with_skips` (√L spacing) | measured below |
@@ -92,31 +113,36 @@ heap top-200 → net score `(1-λ(q))·R + λ(q)·g(d)` → heap top-K → (opti
 
 | system | label | mean_ms | median_ms | p95_ms |
 |---|---|---|---|---|
-| RAND | random order of candidates | 7.980 | 8.150 | 13.430 |
-| S1 | tf-idf lnc.ltc (flat) | 6.290 | 6.130 | 11.270 |
-| S2 | BM25 (flat) | 6.520 | 6.590 | 11.770 |
-| S3 | BM25F (zones) | 7.390 | 7.620 | 12.880 |
-| S3L | linear zone BM25 | 6.540 | 6.840 | 11.720 |
+| RAND | random order of candidates | 3.830 | 3.970 | 6.490 |
+| S1 | tf-idf lnc.ltc (flat) | 3.260 | 3.380 | 5.670 |
+| S2 | BM25 (flat) | 3.120 | 3.240 | 5.530 |
+| S3 | BM25F (zones) | 3.640 | 3.780 | 6.330 |
+| S3L | linear zone BM25 | 3.320 | 3.450 | 5.640 |
+| S4 | BM25F + raw citations | 3.900 | 4.050 | 6.360 |
+| S5 | BM25F + per-year citations | 3.900 | 4.060 | 6.350 |
+| S6 | BM25F + cohort percentile | 4.000 | 4.130 | 6.850 |
+| S7 | BM25F + cohort + adaptive λ | 3.910 | 4.070 | 6.450 |
+| S8 | S7 with PageRank authority | 3.890 | 4.050 | 6.340 |
 
 Champion lists (top-r postings by tf) and index elimination versus exact BM25F top-10:
 
 | r | recall@10_vs_exact | mean_candidates | median_ms |
 |---|---|---|---|
-| 50 | 0.512 | 208.225 | 1.002 |
-| 100 | 0.642 | 408.150 | 1.201 |
-| 250 | 0.820 | 986.200 | 1.657 |
-| 500 | 0.940 | 1,898 | 2.300 |
-| 1000 | 0.988 | 3,615 | 3.278 |
-| full postings | 1.000 | 33,203 | 7.446 |
-| index elimination | 0.860 | 8,328 | 2.503 |
+| 50 | 0.512 | 208.225 | 0.365 |
+| 100 | 0.642 | 408.150 | 0.417 |
+| 250 | 0.820 | 986.200 | 0.581 |
+| 500 | 0.940 | 1,898 | 0.831 |
+| 1000 | 0.988 | 3,615 | 1.296 |
+| full postings | 1.000 | 33,203 | 3.788 |
+| index elimination | 0.860 | 8,328 | 1.101 |
 
 Conjunctive (AND) intersection of the query terms — postings entries touched and time, with and
 without df-ordering and skip pointers:
 
 | Unnamed: 0 | touched_query_order | touched_df_order | touched_df_order+skips | ms_query_order | ms_df_order | ms_df_order+skips |
 |---|---|---|---|---|---|---|
-| mean | 45,052 | 44,082 | 19,154 | 4.680 | 4.440 | 2.550 |
-| median | 42,649 | 40,302 | 11,820 | 4.400 | 4.030 | 1.580 |
+| mean | 45,052 | 44,082 | 19,154 | 1.970 | 1.920 | 1.070 |
+| median | 42,649 | 40,302 | 11,820 | 1.890 | 1.750 | 0.660 |
 
 ## 3. Beyond IR
 
@@ -139,9 +165,18 @@ without df-ordering and skip pointers:
   median publication year of the top-10 back in time and drop the share of recent papers; cohort
   percentiles (A2) do not.
 
-*(not generated yet: `results/bias/age_bias_by_system.csv`)*
+| system | type | median_year@10 | frac_last3y@10 | mean_lambda |
+|---|---|---|---|---|
+| S3 | foundational | 2,018 | 0.220 |  |
+| S3 | recent | 2,023 | 0.870 |  |
+| S4 | foundational | 2,017 | 0.175 | 0.300 |
+| S4 | recent | 2,023 | 0.865 | 0.300 |
+| S6 | foundational | 2,017 | 0.170 | 0.300 |
+| S6 | recent | 2,023 | 0.875 | 0.300 |
+| S7 | foundational | 2,017 | 0.165 | 0.532 |
+| S7 | recent | 2,023 | 0.850 | 0.177 |
 
-*(figure not generated yet: `results/bias/age_bias_vs_lambda.png`)*
+![age_bias_vs_lambda](../results/bias/age_bias_vs_lambda.png)
 
 **[TEAM]** One or two sentences reading the table above (direction and size of the shift for S4 vs S6/S7).
 
@@ -163,7 +198,6 @@ description), split 50/50 into dev (all tuning) and test (headline). Judgments b
 of S1–S7, shuffled and blind to system, graded 0/1/2 by the team. Recall is relative to the pooled
 relevant set. Unjudged documents count as non-relevant (`judged@10` is reported).
 
-*(not generated yet: `results/eval/judged_counts.csv`)*
 Inter-annotator agreement on the overlap queries:
 
 *(not generated yet: `results/eval/agreement.csv`)*
@@ -203,7 +237,10 @@ source *(not generated yet: `results/tuning/params.json`)*; adaptive λ range
 
 NL → query parser, 25 hand-written requests (exact match on filters, F1 on terms, intent accuracy):
 
-*(not generated yet: `results/llm/parser_eval.csv`)*
+| parser | term_f1 | year_min_ok | year_max_ok | categories_ok | zone_ok | filters_exact | intent_ok | fallbacks |
+|---|---|---|---|---|---|---|---|---|
+| llm | 0.975 | 0.880 | 0.920 | 0.480 | 1.000 | 0.440 | 0.720 | 0 |
+| rule | 0.940 | 1.000 | 1.000 | 0.960 | 1.000 | 0.960 | 0.920 | 0 |
 
 Citation checker on *(not generated yet: `results/llm/checker_params.json`)*-thresholded support
 (dev-tuned), detecting unsupported sentences (labelled by the team + 15 injected corruptions):
@@ -225,7 +262,7 @@ misread by the features, corpus has few relevant papers).
 
 * **Corpus snapshot ends in 2023**, and is a stratified 80k sample: most individual landmark papers
   are not in it, so "foundational" queries are judged on what the sample contains.
-* **Citation coverage** is incomplete (*(not generated yet: `results/index/authority_info.json`)* is the
+* **Citation coverage** is incomplete (2023 is the
   reference year; see coverage table). Unmatched papers receive the cohort median, which neither
   boosts nor buries them; OpenAlex metadata errors (mis-merges, duplicate records that split
   citations) remain.

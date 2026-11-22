@@ -70,7 +70,7 @@ def cmd_postings(args):
 
 def cmd_nl(args):
     from .llm_client import LLMClient
-    from .llm_query_parser import llm_parse
+    from .llm_query_parser import guarded_llm_parse as llm_parse
     eng = _engine(args)
     sq, src = llm_parse(args.request, LLMClient(eng.cfg), int(eng.years.max()))
     print(f"[{src}] {sq.model_dump_json()}\ncompiled query: {sq.compile()}")

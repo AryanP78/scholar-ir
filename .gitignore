@@ -8,3 +8,9 @@ __pycache__/
 .venv/
 .sync/
 *.egg-info/
+
+# local / large files
+.DS_Store
+_transfer/
+*.log
+*.tgz

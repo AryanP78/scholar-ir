@@ -1,0 +1,96 @@
+{
+  "tuned_on": "dev",
+  "params": {
+    "ranking": {
+      "bm25": {
+        "k1": 1.5,
+        "b": 0.3
+      },
+      "bm25f": {
+        "w": {
+          "title": 4.0
+        }
+      }
+    },
+    "net_score": {
+      "fixed_lambda_by_authority": {
+        "A0": 0.3,
+        "A1": 0.3,
+        "A2": 0.3,
+        "H": 0.3
+      }
+    },
+    "adaptive": {
+      "norm": {
+        "idf_mean": 2.837534171569087,
+        "idf_std": 0.6983062935132429,
+        "len_mean": 4.05,
+        "len_std": 1.190974832912761
+      },
+      "weights": [
+        -0.4352,
+        1.7319,
+        -1.1191,
+        -0.0366,
+        -0.7646,
+        -0.1135,
+        0.0,
+        0.0
+      ],
+      "lambda_min": 0.05,
+      "lambda_max": 0.7
+    },
+    "hits": {
+      "blend": 0.5
+    }
+  },
+  "report": {
+    "bm25f_w_title_dev": {
+      "1.0": 0.6317595489914247,
+      "1.5": 0.6596063003838246,
+      "2.5": 0.6790866757135804,
+      "4.0": 0.6991112841895518
+    },
+    "hits_dev_best": {
+      "blend": 0.5,
+      "lambda": 0.3,
+      "nDCG@10": 0.7301620513744752
+    },
+    "intent_classifier_dev_accuracy": 1.0,
+    "bm25_best": {
+      "k1": 1.5,
+      "b": 0.3
+    },
+    "fixed_lambda_by_authority": {
+      "A0": 0.3,
+      "A1": 0.3,
+      "A2": 0.3,
+      "H": 0.3
+    },
+    "adaptive_lambda_range": [
+      0.05,
+      0.7
+    ],
+    "adaptive_dev_ndcg10": 0.7355848753963533,
+    "features": [
+      "bias",
+      "found_cue",
+      "recent_cue",
+      "idf_z",
+      "len_z",
+      "flatness",
+      "llm_found",
+      "llm_recent"
+    ],
+    "weights": [
+      -0.4352,
+      1.7319,
+      -1.1191,
+      -0.0366,
+      -0.7646,
+      -0.1135,
+      0.0,
+      0.0
+    ]
+  }
+}

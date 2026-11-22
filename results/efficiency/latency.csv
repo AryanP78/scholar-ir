@@ -1,0 +1,13 @@
+system,label,mean_ms,median_ms,p95_ms
+RAND,random order of candidates,7.39,7.81,12.97
+S1,tf-idf lnc.ltc (flat),6.53,6.63,11.41
+S2,BM25 (flat),7.39,7.76,12.62
+S3,BM25F (zones),7.05,7.07,12.36
+S3L,linear zone BM25,7.27,7.26,12.79
+S4,BM25F + raw citations,10.08,9.3,18.59
+S5,BM25F + per-year citations,10.2,10.88,18.0
+S6,BM25F + cohort percentile,9.35,9.58,16.98
+S7,BM25F + cohort + adaptive λ,8.62,8.41,14.82
+S8,S7 with PageRank authority,8.29,8.09,14.49
+S9,BM25F + topic authority (HITS),12.99,13.39,18.98
+S10,BM25F + topic HITS + adaptive λ,12.38,12.83,18.01

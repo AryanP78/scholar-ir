@@ -83,6 +83,15 @@ authority:
   pagerank_tol: 1.0e-9
   pagerank_max_iter: 300
 
+hits:                       # topic-local authority (final project): HITS on each query's citation neighbourhood
+  max_citers: 100           # Kleinberg's cap on citing papers added per root paper
+  relevance_weighted: true  # weight each citing paper's vote by its BM25F relevance (Bharat & Henzinger 1998)
+  blend: 1.0                # weight of HITS in g; the rest is the age-fair global authority A2 (tuned on dev)
+  max_iter: 100
+  tol: 1.0e-8
+  grid_blend: [0.5, 1.0]
+  grid_lambda: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
+
 net_score:
   fixed_lambda: 0.3         # S4-S6; tuned on dev
   combine: additive         # additive | multiplicative
@@ -138,7 +147,7 @@ checker:
 
 evaluation:
   pool_depth: 15
-  pool_systems: [S1, S2, S3, S4, S5, S6, S7]
+  pool_systems: [S1, S2, S3, S4, S5, S6, S7, S9, S10]
   k_values: [5, 10, 20]
   recent_window_years: 3
   bootstrap_samples: 10000

@@ -170,6 +170,30 @@ def llm_parse(text: str, client: LLMClient, current_year: int) -> tuple[Structur
     return rule_parse(text, current_year), "rule-fallback"
 
 
+_EXPLICIT_YEAR = re.compile(r"\b(19|20)\d{2}\b|\b(?:last|past) \d+ years\b|\bthis year\b|\blast year\b")
+
+
+def guard_filters(sq: StructuredQuery, text: str, current_year: int) -> StructuredQuery:
+    """Final-project fix for the mid-term finding that the LLM parser over-filters (13 of its 14 misses
+    added category filters nobody asked for; 3 turned "new"/"recent" into a year range). Filters remove
+    papers outright, so they must come from the user's words, not the model's guess:
+      * categories: only fields the request names explicitly (the rule cues), never inferred ones;
+      * years: kept only when the request states a year or a "last N years" span.
+    The topic words, phrases, zone and intent from the LLM are kept. Topic is shown to the user as a soft
+    hint from the Naive Bayes classifier instead (see classify.TopicClassifier)."""
+    rule = rule_parse(text, current_year)
+    out = sq.model_copy(deep=True)
+    out.categories = list(rule.categories)
+    if not _EXPLICIT_YEAR.search(text.lower()):
+        out.year_min = out.year_max = None
+    return out
+
+
+def guarded_llm_parse(text: str, client: LLMClient, current_year: int) -> tuple[StructuredQuery, str]:
+    sq, src = llm_parse(text, client, current_year)
+    return (guard_filters(sq, text, current_year), src + "+guard") if src != "rule-fallback" else (sq, src)
+
+
 INTENT_PROMPT = """Classify what kind of papers a researcher wants for this search query.
 Answer with JSON {"intent": X} where X is one of:
 "foundational" (seminal, classic, highly-regarded or survey work), "recent" (newest work, current trends),

@@ -10,6 +10,8 @@ Systems compared in the evaluation (config-driven; see SYSTEMS):
     S6  S3 + cohort-percentile authority A2, fixed lambda
     S7  S6 + query-adaptive lambda                   (proposed system)
     S8  S7 with PageRank cohort-percentile authority A3
+    S9  S3 + topic-local HITS authority H (per query), fixed lambda      (final-project novelty)
+    S10 S9 + query-adaptive lambda                                        (final proposed system)
     RAND random order of the BM25F candidate pool    (sanity baseline)
 """
 from __future__ import annotations
@@ -51,6 +53,8 @@ SYSTEMS: dict[str, dict[str, Any]] = {
     "S6": {"base": "bm25f", "authority": "A2", "lambda": "fixed", "label": "BM25F + cohort percentile"},
     "S7": {"base": "bm25f", "authority": "A2", "lambda": "adaptive", "label": "BM25F + cohort + adaptive λ"},
     "S8": {"base": "bm25f", "authority": "A3", "lambda": "adaptive", "label": "S7 with PageRank authority"},
+    "S9": {"base": "bm25f", "authority": "H", "lambda": "fixed", "label": "BM25F + topic authority (HITS)"},
+    "S10": {"base": "bm25f", "authority": "H", "lambda": "adaptive", "label": "BM25F + topic HITS + adaptive λ"},
     "RAND": {"base": "random", "label": "random order of candidates"},
 }
 
@@ -90,6 +94,7 @@ class SearchResponse:
     results: list[Result]
     n_candidates: int
     lam: float | None = None
+    hits_info: dict | None = None
     p_found: float | None = None
     features: IntentFeatures | None = None
     query_terms: list[QueryTerm] = field(default_factory=list)
@@ -135,6 +140,44 @@ class SearchEngine:
         # collapsed at result-assembly time (29 such pairs in the 80k corpus)
         self.title_key = papers["title"].str.lower().str.replace(r"[^a-z0-9]+", " ", regex=True).str.strip().tolist()
         self.years = papers["year"].to_numpy()
+        self._graph = None
+
+    @property
+    def topic_classifier(self):
+        """Naive Bayes field classifier over the whole corpus (built on first use, about a second)."""
+        if getattr(self, "_topic_clf", None) is None:
+            from .classify import TopicClassifier
+            self._topic_clf = TopicClassifier(self.index, self.papers)
+        return self._topic_clf
+
+    @property
+    def graph(self):
+        """Whole-corpus citation graph for topic-local HITS (loaded on first use)."""
+        if self._graph is None:
+            from .hits import CitationGraph
+            path = p(self.cfg, "processed_dir") / "refs_full.parquet"
+            if not path.exists():
+                raise RuntimeError("refs_full.parquet missing: run `python scripts/export_refs.py`")
+            self._graph = CitationGraph.load(path, self.index.N, self.cfg.get("hits", {}).get("max_citers", 100))
+        return self._graph
+
+    def topic_authority(self, docs: np.ndarray, acc: np.ndarray, ov: dict | None = None) -> tuple[np.ndarray, dict]:
+        """g_topic for the root docs: relevance-weighted HITS authority percentile, optionally blended
+        with the age-fair global authority A2 (hits.blend = weight of the HITS part)."""
+        from .hits import percentile_score
+        hc = self.cfg.get("hits", {})
+        ov = ov or {}
+        weighted = ov.get("hits_weighted", hc.get("relevance_weighted", True))
+        H = self.graph.hits(docs, weight=acc if weighted else None, max_iter=hc.get("max_iter", 100),
+                            tol=hc.get("tol", 1e-8), exclude=ov.get("hits_exclude"))
+        g_hits = percentile_score(H.authority)
+        beta = float(ov.get("hits_blend", hc.get("blend", 1.0)))
+        g = beta * g_hits + (1 - beta) * self.g["A2"][docs] if beta < 1 else g_hits
+        info = {"base_size": H.base_size, "edges": H.edges, "iterations": H.iterations,
+                "cited_in_topic": int((H.authority > 0).sum()), "blend": beta,
+                "hub": dict(zip(docs.tolist(), percentile_score(H.hub).tolist())),
+                "hits_authority": dict(zip(docs.tolist(), g_hits.tolist()))}
+        return g, info
 
     # ---- loading -------------------------------------------------------------------------------
     @classmethod
@@ -254,13 +297,16 @@ class SearchEngine:
             if system == "S3":  # intent features are diagnostic for S3 too (shown in the demo)
                 resp.features, resp.p_found = self.intent(pq, qterms, [s for _, s in top[:10]], llm_intent)
         else:
-            if auth_key not in self.g:
+            if auth_key != "H" and auth_key not in self.g:
                 raise RuntimeError("authority scores not built; run `make index` after `make citations`")
             pool = topk_from_accumulator(acc, touched, pool_n)
             docs = np.array([d for d, _ in pool], dtype=np.int64)
             rel = np.array([s for _, s in pool])
             R = minmax(rel)
-            g = self.g[auth_key][docs] if len(docs) else np.empty(0)
+            if auth_key == "H":
+                g, resp.hits_info = self.topic_authority(docs, acc, ov) if len(docs) else (np.empty(0), None)
+            else:
+                g = self.g[auth_key][docs] if len(docs) else np.empty(0)
             feats, pf = self.intent(pq, qterms, rel[:10].tolist(), llm_intent)
             resp.features, resp.p_found = feats, pf
             ac = self.cfg["adaptive"]

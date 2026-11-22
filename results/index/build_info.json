@@ -1,7 +1,7 @@
 {
   "N": 80000,
-  "build_seconds": 12.0,
-  "load_seconds": 0.06,
+  "build_seconds": 31.3,
+  "load_seconds": 0.19,
   "index_file_MB": 296.9,
   "terms_with_champion_lists": {
     "all": 1715,

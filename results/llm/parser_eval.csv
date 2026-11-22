@@ -1,0 +1,4 @@
+parser,term_f1,year_min_ok,year_max_ok,categories_ok,zone_ok,filters_exact,intent_ok,fallbacks
+llm,0.975,0.88,0.92,0.48,1.0,0.44,0.72,0
+llm+guard,0.975,1.0,1.0,0.96,1.0,0.96,0.72,0
+rule,0.94,1.0,1.0,0.96,1.0,0.96,0.92,0

@@ -146,3 +146,33 @@ numpy, pandas, pyarrow, scipy, matplotlib, PyYAML, NLTK (Porter stemmer), reques
 datasets (download only), pytest, rank_bm25 (test-time cross-check of our BM25 only), Jupyter.
 Search engines/IR libraries (Elasticsearch, Lucene, Whoosh, Pyserini) are **not** used.
 AI assistance is declared in `report/ai_use_declaration.md`.
+
+## 8. Final project additions
+
+The final project extends the mid-term system (report: `report/Scholar_IR_Final_Report.pdf`).
+
+- **Topic-specific citation authority** (`src/scholar_ir/hits.py`): relevance-weighted HITS on each
+  query's citation neighbourhood, blended 50/50 with year-normalised global authority. New systems
+  **S9** (fixed λ = 0.3) and **S10** (adaptive λ).
+- **Full reference lists** (`scripts/export_refs.py`): 922,768 citation links from the OpenAlex cache.
+- **Field classifiers** (`src/scholar_ir/classify.py`): Naive Bayes (+ mutual-information selection),
+  Rocchio and kNN over 7 arXiv fields.
+- **Fixes**: LLM parser filter guard (`llm_query_parser.guarded_llm_parse`), hyphenated query words
+  (`ranking.query_terms`).
+- **Interface**: old (S4) vs new ranking comparison, score bars, predicted field, topic hubs.
+
+```bash
+python scripts/export_refs.py               # build data/processed/refs_full.parquet
+python -m scholar_ir.experiments all        # tuning, evaluation, ablations, citation recommendation
+python -m scholar_ir.classify eval          # classifier results -> results/classify/
+python -m scholar_ir.llm_experiments parser # parser table (uses cached Gemini responses)
+make test                                   # 49 pass, 1 skipped without an API key
+```
+
+On macOS with Homebrew Python, install into a virtual environment first:
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt ipywidgets notebook
+python -m jupyter notebook notebooks/07_app.ipynb
+```

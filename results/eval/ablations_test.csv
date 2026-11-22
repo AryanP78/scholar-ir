@@ -1,0 +1,23 @@
+variant,nDCG@10_foundational,nDCG@10_recent,nDCG@10_all,P@10_all,median_year@10
+S1 tf-idf lnc.ltc (flat),0.6588,0.671,0.6649,0.785,2019.75
+S2 BM25 (flat),0.7807,0.7845,0.7826,0.89,2020.0
+S3 BM25F (zones),0.8488,0.8614,0.8551,0.91,2019.5
+S3L linear zone BM25,0.7722,0.7693,0.7708,0.83,2020.0
+S4 BM25F + raw citations,0.8422,0.854,0.8481,0.91,2019.0
+S5 BM25F + per-year citations,0.8381,0.8609,0.8495,0.91,2019.25
+S6 BM25F + cohort percentile,0.8362,0.8682,0.8522,0.91,2018.75
+S7 BM25F + cohort + adaptive λ,0.8371,0.8651,0.8511,0.91,2018.5
+S8 S7 with PageRank authority,0.8139,0.8482,0.8311,0.89,2019.75
+S9 BM25F + topic authority (HITS),0.8452,0.8559,0.8506,0.915,2018.25
+S10 BM25F + topic HITS + adaptive λ,0.8365,0.8699,0.8532,0.92,2018.25
+S9 classic (unweighted) HITS,0.8398,0.8564,0.8481,0.905,2018.5
+S9 HITS only (no blend with A2),0.8438,0.8231,0.8335,0.905,2018.0
+S9 classic HITS only,0.8369,0.825,0.831,0.885,2018.5
+S6 multiplicative net score,0.8437,0.8649,0.8543,0.91,2019.25
+S7 multiplicative net score,0.8447,0.8682,0.8565,0.915,2019.25
+"BM25F + PageRank-cohort, fixed λ",0.8066,0.8486,0.8276,0.885,2020.0
+S3 champion lists (r=500),0.8301,0.8277,0.8289,0.885,2019.5
+S3 index elimination,0.7353,0.8129,0.7741,0.82,2019.5
+S3 stem=False stopwords=True,0.7694,0.6467,0.7081,0.74,2019.0
+S3 stem=True stopwords=False,0.8372,0.8556,0.8464,0.915,2019.5
+S3 stem=False stopwords=False,0.7725,0.6326,0.7025,0.745,2019.0

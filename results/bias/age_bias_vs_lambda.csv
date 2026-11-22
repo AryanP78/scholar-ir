@@ -1,0 +1,57 @@
+authority,lambda,type,median_year@10,frac_last3y@10,median_citations@10
+A0 raw,0.0,foundational,2018.0,0.215,26.0
+A0 raw,0.0,recent,2023.0,0.885,42.5
+A0 raw,0.1,foundational,2018.0,0.2,33.0
+A0 raw,0.1,recent,2023.0,0.88,46.5
+A0 raw,0.2,foundational,2018.0,0.205,42.5
+A0 raw,0.2,recent,2023.0,0.87,54.0
+A0 raw,0.3,foundational,2017.0,0.17,76.0
+A0 raw,0.3,recent,2023.0,0.855,63.5
+A0 raw,0.4,foundational,2017.0,0.155,101.0
+A0 raw,0.4,recent,2023.0,0.83,85.0
+A0 raw,0.5,foundational,2017.0,0.125,160.5
+A0 raw,0.5,recent,2022.0,0.8,132.5
+A0 raw,0.6,foundational,2017.0,0.095,234.0
+A0 raw,0.6,recent,2022.0,0.76,208.0
+A1 per-year,0.0,foundational,2018.0,0.215,26.0
+A1 per-year,0.0,recent,2023.0,0.885,42.5
+A1 per-year,0.1,foundational,2018.0,0.21,33.0
+A1 per-year,0.1,recent,2023.0,0.88,46.5
+A1 per-year,0.2,foundational,2018.0,0.22,39.0
+A1 per-year,0.2,recent,2023.0,0.895,52.5
+A1 per-year,0.3,foundational,2018.0,0.2,64.5
+A1 per-year,0.3,recent,2023.0,0.885,63.0
+A1 per-year,0.4,foundational,2018.0,0.215,100.0
+A1 per-year,0.4,recent,2023.0,0.875,85.5
+A1 per-year,0.5,foundational,2017.0,0.2,157.0
+A1 per-year,0.5,recent,2023.0,0.86,126.5
+A1 per-year,0.6,foundational,2017.0,0.205,294.0
+A1 per-year,0.6,recent,2023.0,0.845,201.5
+A2 cohort,0.0,foundational,2018.0,0.215,26.0
+A2 cohort,0.0,recent,2023.0,0.885,42.5
+A2 cohort,0.1,foundational,2018.0,0.21,39.0
+A2 cohort,0.1,recent,2023.0,0.885,48.5
+A2 cohort,0.2,foundational,2018.0,0.18,77.0
+A2 cohort,0.2,recent,2023.0,0.875,63.0
+A2 cohort,0.3,foundational,2017.5,0.185,94.5
+A2 cohort,0.3,recent,2023.0,0.875,73.5
+A2 cohort,0.4,foundational,2017.0,0.16,144.5
+A2 cohort,0.4,recent,2023.0,0.85,112.0
+A2 cohort,0.5,foundational,2017.0,0.155,175.5
+A2 cohort,0.5,recent,2023.0,0.845,127.0
+A2 cohort,0.6,foundational,2017.0,0.18,242.0
+A2 cohort,0.6,recent,2023.0,0.835,152.5
+A3 PageRank cohort,0.0,foundational,2018.0,0.215,26.0
+A3 PageRank cohort,0.0,recent,2023.0,0.885,42.5
+A3 PageRank cohort,0.1,foundational,2018.0,0.205,29.0
+A3 PageRank cohort,0.1,recent,2023.0,0.875,43.5
+A3 PageRank cohort,0.2,foundational,2018.0,0.195,33.0
+A3 PageRank cohort,0.2,recent,2023.0,0.865,45.0
+A3 PageRank cohort,0.3,foundational,2018.0,0.175,40.5
+A3 PageRank cohort,0.3,recent,2023.0,0.845,47.5
+A3 PageRank cohort,0.4,foundational,2017.0,0.165,69.5
+A3 PageRank cohort,0.4,recent,2023.0,0.815,55.0
+A3 PageRank cohort,0.5,foundational,2017.0,0.145,85.5
+A3 PageRank cohort,0.5,recent,2023.0,0.74,66.0
+A3 PageRank cohort,0.6,foundational,2017.0,0.095,131.0
+A3 PageRank cohort,0.6,recent,2021.0,0.605,117.0

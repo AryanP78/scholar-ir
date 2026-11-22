@@ -28,10 +28,14 @@ class QueryTerm:
 
 
 def query_terms(index: Index, pq: ParsedQuery) -> list[QueryTerm]:
-    """Positive (non-negated) terms of the parsed query, analysed with the index's analyzer."""
+    """Positive (non-negated) terms of the parsed query, analysed with the index's analyzer.
+    Hyphenated query words contribute their parts only, not also the joined form: otherwise
+    "LLM-based recommender" scores llm + llmbased against a single "recommend", so the generic
+    half of the query outweighs the topic (mid-term failure case R14). Documents still index both
+    forms, so nothing is lost on the document side."""
     counts: Counter = Counter()
     for leaf in positive_clauses(pq.root):
-        for t in index.analyzer.terms(leaf.text):
+        for t, _ in index.analyzer.phrase_terms(leaf.text):
             counts[(t, leaf.zone)] += 1
     return [QueryTerm(t, z, n) for (t, z), n in counts.items()]
 

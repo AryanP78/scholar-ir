@@ -29,39 +29,85 @@ EXAMPLE_QUESTIONS = [
     "Recent work since 2022 on hallucination detection in large language models?",
 ]
 EXAMPLE_SEARCHES = [
+    "sequence to sequence learning for machine translation",
+    "LLM-based recommender systems",
+    '"dense retrieval" year:>=2021',
     "seminal work on word embeddings",
     "LLM agents that use tools",
     '"retrieval-augmented generation" year:>=2022',
     "title:survey recommender systems",
     "(dense OR neural) AND retrieval NOT image cat:cs.IR",
-    '"query expansion" NEAR/5',
+    '"query expansion" NEAR/5 feedback NOT image',
 ]
 
 CSS = """
 <style>
-.sir{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#1f2328;max-width:980px}
-.sir h3{font-size:15px;margin:18px 0 8px;color:#57606a;text-transform:uppercase;letter-spacing:.04em}
-.sir .card{border:1px solid #d0d7de;border-radius:10px;padding:12px 14px;margin:8px 0;background:#fff}
-.sir .muted{color:#57606a;font-size:12.5px}
-.sir code{background:#f3f4f6;padding:2px 6px;border-radius:5px;font-size:12.5px}
-.sir .pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11.5px;font-weight:600;margin-right:4px}
-.sir .ok{background:#dafbe1;color:#116329}.sir .bad{background:#ffebe9;color:#a40e26}.sir .info{background:#ddf4ff;color:#0a3069}
-.sir .sent{border-left:4px solid #2da44e;padding:8px 12px;margin:8px 0;background:#f6fef8;border-radius:0 8px 8px 0}
-.sir .sent.flag{border-left-color:#cf222e;background:#fff6f6}
-.sir .bar{height:6px;background:#eaeef2;border-radius:3px;width:180px;display:inline-block;vertical-align:middle;margin:0 6px}
-.sir .bar{position:relative}
-.sir .bar>span{display:block;height:6px;border-radius:3px;background:#2da44e}
-.sir .bar>i{position:absolute;top:-3px;width:2px;height:12px;background:#57606a}
-.sir .sent.flag .bar>span{background:#cf222e}
-.sir .paper{display:flex;gap:12px;align-items:flex-start}
-.sir .rank{font-weight:700;color:#8c959f;min-width:22px}
-.sir a{color:#0969da;text-decoration:none}.sir a:hover{text-decoration:underline}
-.sir table{border-collapse:collapse;font-size:12.5px;margin-top:6px}
-.sir td,.sir th{border-bottom:1px solid #eaeef2;padding:3px 8px;text-align:left}
-.sir details summary{cursor:pointer;color:#57606a;font-size:12.5px}
+.sir{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#1e2330;background:#f5f6fa;
+     border-radius:14px;padding:14px 16px;max-width:1060px;line-height:1.45}
+.sir h3{font-size:12px;margin:16px 0 8px;color:#6b7280;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+.sir .card{border:1px solid #e3e6ee;border-radius:12px;padding:12px 16px;margin:8px 0;background:#fff;
+           box-shadow:0 1px 2px rgba(16,24,40,.05)}
+.sir .muted{color:#6b7280;font-size:12.5px}
+.sir code{background:#eef0f6;color:#1e2330;padding:1px 6px;border-radius:5px;font-size:12px}
+.sir .pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11px;font-weight:600;margin-right:4px}
+.sir .ok{background:#dcfce7;color:#166534}.sir .bad{background:#fee2e2;color:#991b1b}.sir .info{background:#e0e7ff;color:#3730a3}
+.sir .warn{background:#fef3c7;color:#92400e}.sir .grey{background:#eef0f6;color:#374151}
+.sir .sent{border-left:4px solid #16a34a;padding:8px 12px;margin:8px 0;background:#f0fdf4;border-radius:0 8px 8px 0}
+.sir .sent.flag{border-left-color:#dc2626;background:#fef2f2}
+.sir .bar{height:6px;background:#e5e7eb;border-radius:3px;width:160px;display:inline-block;vertical-align:middle;margin:0 6px;position:relative}
+.sir .bar>span{display:block;height:6px;border-radius:3px;background:#16a34a}
+.sir .bar>i{position:absolute;top:-3px;width:2px;height:12px;background:#6b7280}
+.sir .sent.flag .bar>span{background:#dc2626}
+.sir a{color:#4338ca;text-decoration:none}.sir a:hover{text-decoration:underline}
+.sir table{border-collapse:collapse;font-size:12px;margin-top:6px}
+.sir td,.sir th{border-bottom:1px solid #eef0f6;padding:3px 8px;text-align:left}
+.sir details summary{cursor:pointer;color:#6b7280;font-size:12px;margin-top:4px}
+/* search summary */
+.sir .sys{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sir .sysname{font-weight:700;font-size:15px}
+.sir .tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:10px}
+.sir .tile{background:#f8f9fc;border:1px solid #eceff5;border-radius:10px;padding:9px 11px}
+.sir .tile .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:#6b7280;font-weight:700}
+.sir .tile .v{font-size:18px;font-weight:700;margin-top:2px}
+.sir .tile .s{font-size:11.5px;color:#6b7280}
+.sir .meter{height:6px;background:#e5e7eb;border-radius:3px;margin-top:6px;overflow:hidden}
+.sir .meter>span{display:block;height:6px;background:#4f46e5}
+.sir .note{margin-top:10px;font-size:12px;color:#92400e;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:6px 10px}
+.sir .hubs{margin-top:10px;font-size:12px}
+.sir .hub{display:inline-block;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:8px;padding:3px 8px;margin:3px 4px 0 0}
+/* result cards */
+.sir .paper{display:flex;gap:14px;align-items:flex-start}
+.sir .rank{flex:0 0 30px;height:30px;border-radius:50%;background:#eef2ff;color:#4338ca;font-weight:700;
+           display:flex;align-items:center;justify-content:center;font-size:13px}
+.sir .ptitle{font-weight:650;font-size:14.5px}
+.sir .meta{margin-top:3px}
+.sir .scores{display:flex;gap:16px;flex-wrap:wrap;margin-top:8px;font-size:11.5px;color:#4b5563}
+.sir .sc{display:flex;align-items:center;gap:6px}
+.sir .sc .mb{width:74px;height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden}
+.sir .sc .mb>span{display:block;height:6px}
+.sir .final{margin-left:auto;font-weight:700;color:#1e2330;font-size:13px}
+/* compare */
+.sir .cmp{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sir .crow{display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #f0f1f5;font-size:12.5px}
+.sir .crow:last-child{border-bottom:none}
+.sir .crank{flex:0 0 20px;color:#9ca3af;font-weight:700}
+.sir .mv{flex:0 0 52px;text-align:right;font-size:11px;font-weight:700}
+.sir .up{color:#15803d}.sir .down{color:#b91c1c}.sir .new{color:#b45309}.sir .gone{color:#9ca3af}
+@media (max-width:760px){.sir .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.sir .cmp{grid-template-columns:1fr}}
 </style>
 """
 
+HEADER = """
+<div style="font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:1060px;border-radius:14px;
+  padding:16px 20px;margin:2px 0 10px;background:linear-gradient(120deg,#312e81 0%,#4f46e5 55%,#7c3aed 100%);color:#fff">
+  <div style="font-size:22px;font-weight:800;letter-spacing:-.01em">Scholar-IR</div>
+  <div style="opacity:.9;font-size:13px;margin-top:2px">Search 80,000 arXiv computer-science papers · BM25F ranking ·
+    topic-local citation authority (HITS) · query-adaptive weighting · cited answers</div>
+  <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;font-size:11.5px">
+    {chips}
+  </div>
+</div>
+"""
 
 def _arxiv_link(aid: str) -> str:
     return f'<a href="https://arxiv.org/abs/{html.escape(aid)}" target="_blank">arXiv:{html.escape(aid)}</a>'
@@ -73,6 +119,7 @@ def _linkify_citations(text: str) -> str:
 
 
 def _intent_html(resp: SearchResponse) -> str:
+    """One-line intent summary (used under answers)."""
     if resp.features is None:
         return ""
     f = resp.features
@@ -82,13 +129,37 @@ def _intent_html(resp: SearchResponse) -> str:
             f"mean-idf z = {f.idf_z:+.2f} · score flatness = {f.flatness:.2f}</div>")
 
 
+def _mini(label: str, value: float | None, color: str) -> str:
+    if value is None or value != value:  # None or NaN
+        return ""
+    w = max(2, min(100, int(round(100 * float(value)))))
+    return (f'<div class="sc">{html.escape(label)}<div class="mb"><span style="width:{w}%;background:{color}"></span>'
+            f"</div><b>{float(value):.2f}</b></div>")
+
+
+def _category(engine: SearchEngine, doc_id: int) -> str:
+    try:
+        cats = engine.papers.iloc[doc_id]["categories"]
+        cats = list(cats) if not isinstance(cats, str) else cats.split()
+        return cats[0] if cats else ""
+    except Exception:
+        return ""
+
+
 def papers_html(engine: SearchEngine, resp: SearchResponse, explain: bool = False) -> str:
     abstracts = engine.papers.set_index("doc_id")["abstract"]
     out = []
     for r in resp.results:
-        extra = ""
+        scores = ""
         if r.relevance is not None:
-            extra = f" · relevance R = {r.relevance:.2f} · authority g = {r.authority:.2f}"
+            bars = [_mini("relevance R", r.relevance, "#4f46e5")]
+            if resp.hits_info:
+                bars.append(_mini("topic HITS", resp.hits_info["hits_authority"].get(r.doc_id, 0.0), "#d97706"))
+                if "A2" in engine.g:
+                    bars.append(_mini("global", float(engine.g["A2"][r.doc_id]), "#0d9488"))
+            else:
+                bars.append(_mini("authority g", r.authority, "#0d9488"))
+            scores = f'<div class="scores">{"".join(bars)}<div class="final">score {r.score:.3f}</div></div>'
         breakdown = ""
         if explain and r.explain:
             rel = r.explain.get("relevance", {})
@@ -104,23 +175,97 @@ def papers_html(engine: SearchEngine, resp: SearchResponse, explain: bool = Fals
             head = "<tr><th>term</th><th>idf / w_q</th><th>matches</th><th>contribution</th></tr>"
             net = r.explain.get("net", {})
             net_line = f"<div class='muted'>net score = {html.escape(net['formula'])} = {net['net']}</div>" if net else ""
-            breakdown = f"<details><summary>why this paper? ({html.escape(rel.get('model', ''))})</summary><table>{head}{''.join(rows)}</table>{net_line}</details>"
+            breakdown = (f"<details><summary>why this paper? ({html.escape(rel.get('model', ''))})</summary>"
+                         f"<table>{head}{''.join(rows)}</table>{net_line}</details>")
         abstract = html.escape(str(abstracts[r.doc_id]))
+        cat = _category(engine, r.doc_id)
+        cat_pill = f'<span class="pill grey">{html.escape(cat)}</span>' if cat else ""
+        url = f"https://arxiv.org/abs/{html.escape(r.arxiv_id)}"
         out.append(
-            f'<div class="card paper"><div class="rank">{r.rank}</div><div>'
-            f'<div><b>{html.escape(r.title)}</b></div>'
-            f'<div class="muted">{_arxiv_link(r.arxiv_id)} · {r.year} · {r.citations:,} citations · score {r.score:.3f}{extra}</div>'
+            f'<div class="card paper"><div class="rank">{r.rank}</div><div style="flex:1;min-width:0">'
+            f'<div class="ptitle"><a href="{url}" target="_blank" style="color:#1e2330">{html.escape(r.title)}</a></div>'
+            f'<div class="meta muted"><span class="pill info">{r.year}</span><span class="pill warn">{r.citations:,} citations</span>'
+            f"{cat_pill} {_arxiv_link(r.arxiv_id)}</div>{scores}"
             f'<details><summary>abstract</summary><div class="muted" style="margin-top:4px">{abstract}</div></details>'
             f"{breakdown}</div></div>")
     return "".join(out) or '<div class="card muted">No papers matched.</div>'
 
 
+def _summary_html(engine: SearchEngine, resp: SearchResponse) -> str:
+    """System name + four tiles (candidates, λ, predicted field, topic graph) + hubs."""
+    t_ms = resp.timings_ms.get("total", 0)
+    tiles = [f'<div class="tile"><div class="k">Candidates</div><div class="v">{resp.n_candidates:,}</div>'
+             f'<div class="s">{t_ms:.0f} ms</div></div>']
+    if resp.lam is not None:
+        cues = ", ".join(resp.features.matched_cues) if resp.features and resp.features.matched_cues else "no cue words"
+        tiles.append(f'<div class="tile"><div class="k">Authority weight λ</div><div class="v">{resp.lam:.2f}</div>'
+                     f'<div class="meter"><span style="width:{int(100 * resp.lam)}%"></span></div>'
+                     f'<div class="s">p(foundational) {resp.p_found:.2f} · {html.escape(cues)}</div></div>')
+    try:
+        pred = engine.topic_classifier.predict(resp.query, top=2)
+    except Exception:
+        pred = []
+    if pred:
+        tiles.append(f'<div class="tile"><div class="k">Predicted field · Naive Bayes</div><div class="v">{pred[0][0]}</div>'
+                     f'<div class="s">{pred[0][1]:.0%} · then {pred[1][0]} {pred[1][1]:.0%} · add <code>cat:{pred[0][0]}</code> to filter</div></div>'
+                     if len(pred) > 1 else
+                     f'<div class="tile"><div class="k">Predicted field</div><div class="v">{pred[0][0]}</div></div>')
+    hi = resp.hits_info
+    extra = ""
+    if hi:
+        tiles.append(f'<div class="tile"><div class="k">Topic citation graph · HITS</div>'
+                     f'<div class="v">{hi["edges"]:,} <span style="font-size:12px;font-weight:600">links</span></div>'
+                     f'<div class="s">{hi["base_size"]:,} papers · {hi["iterations"]} iterations · '
+                     f'{hi["cited_in_topic"]} candidates cited in-topic</div></div>')
+        if hi["edges"] == 0:
+            extra += ('<div class="note">No citation links among these papers (most 2021+ papers have no reference '
+                      "list in our OpenAlex data), so this ranking falls back on text relevance + global authority.</div>")
+        hubs = [(d, v) for d, v in sorted(hi["hub"].items(), key=lambda kv: -kv[1]) if v > 0][:3]
+        if hubs:
+            extra += ('<div class="hubs"><span class="muted"><b>Key surveys / hubs for this topic:</b></span><br>'
+                      + "".join(f'<span class="hub">{html.escape(engine.titles[d][:72])} ({engine.years[d]})</span>' for d, _ in hubs)
+                      + "</div>")
+    return (f'<div class="card"><div class="sys"><span class="pill info">{html.escape(resp.system)}</span>'
+            f'<span class="sysname">{html.escape(SYSTEMS[resp.system]["label"])}</span>'
+            f'<span class="muted">parsed: <code>{html.escape(resp.parsed)}</code></span></div>'
+            f'<div class="tiles">{"".join(tiles)}</div>{extra}</div>')
+
+
+def _topic_html(engine: SearchEngine, resp: SearchResponse) -> str:  # kept for compatibility
+    return _summary_html(engine, resp)
+
+
 def search_html(engine: SearchEngine, resp: SearchResponse, explain: bool = False) -> str:
-    head = (f'<div class="card"><div><span class="pill info">{html.escape(resp.system)}</span>'
-            f"{html.escape(SYSTEMS[resp.system]['label'])}</div>"
-            f'<div class="muted" style="margin-top:6px">parsed query: <code>{html.escape(resp.parsed)}</code> · '
-            f"{resp.n_candidates:,} candidate papers · {resp.timings_ms.get('total', 0):.0f} ms</div>{_intent_html(resp)}</div>")
-    return f'<div class="sir">{CSS}{head}<h3>Results</h3>{papers_html(engine, resp, explain)}</div>'
+    return f'<div class="sir">{CSS}{_summary_html(engine, resp)}<h3>Results</h3>{papers_html(engine, resp, explain)}</div>'
+
+
+def compare_html(engine: SearchEngine, old: SearchResponse, new: SearchResponse) -> str:
+    """Side-by-side: the old ranking (left) vs the selected one (right), with rank movements."""
+    old_rank = {d: i for i, d in enumerate(old.doc_ids, 1)}
+    new_rank = {d: i for i, d in enumerate(new.doc_ids, 1)}
+
+    def col(resp, other, is_new):
+        rows = []
+        for r in resp.results:
+            o = other.get(r.doc_id)
+            if is_new:
+                mv = ('<span class="mv new">NEW</span>' if o is None else
+                      f'<span class="mv up">▲ {o - r.rank}</span>' if o > r.rank else
+                      f'<span class="mv down">▼ {r.rank - o}</span>' if o < r.rank else '<span class="mv gone">=</span>')
+            else:
+                mv = '<span class="mv gone">dropped</span>' if o is None else '<span class="mv"></span>'
+            rows.append(f'<div class="crow"><span class="crank">{r.rank}</span><div style="flex:1;min-width:0">'
+                        f'<a href="https://arxiv.org/abs/{html.escape(r.arxiv_id)}" target="_blank" style="color:#1e2330">'
+                        f"{html.escape(r.title[:90])}</a><div class='muted'>{r.year} · {r.citations:,} citations</div></div>{mv}</div>")
+        lam = f" · λ {resp.lam:.2f}" if resp.lam is not None else ""
+        return (f'<div class="card"><div class="sys"><span class="pill {"warn" if is_new else "grey"}">{resp.system}</span>'
+                f'<span class="sysname" style="font-size:13.5px">{html.escape(SYSTEMS[resp.system]["label"])}</span>'
+                f'<span class="muted">{lam}</span></div>{"".join(rows)}</div>')
+    moved_in = sum(1 for d in new.doc_ids if d not in old_rank)
+    note = (f'<div class="muted" style="margin:2px 0 6px">{moved_in} of the top {len(new.doc_ids)} are new compared '
+            f"with {old.system}; arrows show how far each paper moved.</div>")
+    return (f'<div class="sir">{CSS}<h3>Old vs new ranking</h3>{note}<div class="cmp">{col(old, new_rank, False)}'
+            f"{col(new, old_rank, True)}</div></div>")
 
 
 def checker_tau(engine: SearchEngine) -> float:
@@ -132,7 +277,7 @@ def answer_html(engine: SearchEngine, ans) -> str:
     parsed = (f'<div class="muted">LLM translation ({html.escape(ans.parser_source)}): '
               f"<code>{html.escape(sq.model_dump_json(exclude_defaults=True) if sq else '-')}</code></div>")
     head = (f'<div class="card"><div><b>Q:</b> {html.escape(ans.question)}</div>{parsed}'
-            f'<div class="muted">compiled query: <code>{html.escape(ans.compiled_query)}</code> · ranked by S7</div>'
+            f'<div class="muted">compiled query: <code>{html.escape(ans.compiled_query)}</code> · ranked by {html.escape(ans.retrieval.system)}</div>'
             f"{_intent_html(ans.retrieval)}</div>")
     if not getattr(ans, "llm_ok", True):
         note = (f'<div class="card" style="border-color:#d4a72c;background:#fff8c5">{html.escape(ans.text)} '
@@ -172,7 +317,7 @@ def launch(engine: SearchEngine | None = None):
     client = LLMClient(engine.cfg)
     ck = engine.cfg["checker"]
     checker = CitationChecker(engine.index, ck["alpha"], ck["tau"])
-    lay = w.Layout(width="760px")
+    lay = w.Layout(width="620px")
 
     # --- Ask tab ---------------------------------------------------------------------------------
     q_box = w.Textarea(placeholder="Ask a question about CS research (papers 2010-2023)…", layout=w.Layout(width="760px", height="64px"))
@@ -216,13 +361,14 @@ def launch(engine: SearchEngine | None = None):
     ask_tab = w.VBox([q_examples, q_box, w.HBox([q_btn, q_k, q_parse]), llm_note, q_status, q_out])
 
     # --- Search tab ------------------------------------------------------------------------------
-    s_box = w.Text(placeholder='e.g.  "dense retrieval" year:>=2021 cat:cs.IR', layout=lay)
+    s_box = w.Text(placeholder='Search papers…  e.g.  "dense retrieval" year:>=2021 cat:cs.IR', layout=lay)
     s_examples = w.Dropdown(options=["— example searches —"] + EXAMPLE_SEARCHES, layout=lay)
-    s_sys = w.Dropdown(options=[(f"{k} · {v['label']}", k) for k, v in SYSTEMS.items() if k != "RAND"], value="S7",
-                       layout=w.Layout(width="360px"))
-    s_k = w.IntSlider(value=10, min=5, max=30, description="results")
-    s_exp = w.Checkbox(value=True, description="explain scores")
-    s_btn = w.Button(description="Search", button_style="primary", icon="search")
+    s_sys = w.Dropdown(options=[(f"{k} · {v['label']}", k) for k, v in SYSTEMS.items() if k != "RAND"], value="S10",
+                       layout=w.Layout(width="340px"))
+    s_k = w.IntSlider(value=10, min=5, max=30, description="results", layout=w.Layout(width="260px"))
+    s_exp = w.Checkbox(value=True, description="explain scores", indent=False, layout=w.Layout(width="130px"))
+    s_cmp = w.Checkbox(value=False, description="compare with S4 (old ranking)", indent=False, layout=w.Layout(width="230px"))
+    s_btn = w.Button(description="Search", button_style="primary", icon="search", layout=w.Layout(width="140px"))
     s_out = w.Output()
 
     def pick_s(change):
@@ -236,19 +382,27 @@ def launch(engine: SearchEngine | None = None):
         with s_out:
             s_out.clear_output()
             try:
-                resp = engine.search(s_box.value.strip(), system=s_sys.value, k=s_k.value, explain=s_exp.value)
+                q = s_box.value.strip()
+                resp = engine.search(q, system=s_sys.value, k=s_k.value, explain=s_exp.value)
+                if s_cmp.value and s_sys.value != "S4":
+                    display(HTML(compare_html(engine, engine.search(q, system="S4", k=s_k.value), resp)))
                 display(HTML(search_html(engine, resp, s_exp.value)))
             except Exception as exc:
                 display(HTML(f"<div class='sir card' style='color:#a40e26'>Error: {html.escape(str(exc))[:500]}</div>"))
     s_btn.on_click(run_s)
-    search_tab = w.VBox([s_examples, s_box, w.HBox([s_sys, s_k, s_exp]), s_btn, s_out])
+    search_tab = w.VBox([s_examples, w.HBox([s_box, s_btn]), w.HBox([s_sys, s_k, s_exp, s_cmp]), s_out])
 
     tabs = w.Tab(children=[ask_tab, search_tab])
     tabs.set_title(0, "Ask a question")
     tabs.set_title(1, "Search papers")
-    title = w.HTML("<div style='font:600 20px -apple-system,sans-serif;margin:4px 0 2px'>Scholar-IR</div>"
-                   f"<div style='color:#57606a;font:13px -apple-system,sans-serif;margin-bottom:8px'>"
-                   f"{engine.index.N:,} arXiv CS papers · zone-aware BM25F · age-fair, query-adaptive citation authority</div>")
+    try:
+        n_links = f"{engine.graph.n_edges:,} citation links"
+    except Exception:
+        n_links = "citation graph not built"
+    chip = "<span style='background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:3px 10px'>{}</span>"
+    chips = "".join(chip.format(c) for c in (f"{engine.index.N:,} papers", "2010–2023", n_links, "7 CS fields",
+                                             "default: S10"))
+    title = w.HTML(HEADER.replace("{chips}", chips))
     app = w.VBox([title, tabs])
     display(app)
     return app

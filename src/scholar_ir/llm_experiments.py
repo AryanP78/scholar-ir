@@ -26,7 +26,7 @@ from .citation_checker import CitationChecker, cited_ids, split_sentences, strip
 from .config import load_config, p, setup_logging
 from .engine import SearchEngine
 from .llm_client import LLMClient
-from .llm_query_parser import llm_intent, llm_parse, rule_parse
+from .llm_query_parser import guarded_llm_parse, llm_intent, llm_parse, rule_parse
 from .rag import answer
 
 log = logging.getLogger("llm_experiments")
@@ -60,13 +60,13 @@ def cmd_parser(cfg, engine, client):
     for _, r in df.iterrows():
         gold_terms = _stems(engine, r.gold_terms.split(";"))
         gold_cats = set(filter(None, r.gold_categories.split(";")))
-        for name in ("rule", "llm"):
+        for name in ("rule", "llm", "llm+guard"):
             if name == "rule":
                 sq, src = rule_parse(r.request, year), "rule"
             else:
                 if not client.available():
                     continue
-                sq, src = llm_parse(r.request, client, year)
+                sq, src = (llm_parse if name == "llm" else guarded_llm_parse)(r.request, client, year)
             pred_terms = _stems(engine, sq.terms + sq.phrases)
             rows.append({"request_id": r.request_id, "parser": name, "source": src, "compiled": sq.compile(),
                          "term_f1": _f1(pred_terms, gold_terms),

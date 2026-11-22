@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 from .citation_checker import CitationChecker, SentenceCheck
 from .engine import SearchEngine, SearchResponse
 from .llm_client import LLMClient, LLMError
-from .llm_query_parser import StructuredQuery, llm_parse
+from .llm_query_parser import StructuredQuery, guarded_llm_parse
 
 
 @dataclass
@@ -49,12 +49,12 @@ def context_block(ctx: dict[str, str]) -> str:
 
 
 def answer(question: str, engine: SearchEngine, client: LLMClient, checker: CitationChecker,
-           k: int | None = None, system: str = "S7", use_llm_parser: bool = True) -> Answer:
+           k: int | None = None, system: str = "S10", use_llm_parser: bool = True) -> Answer:
     cfg = engine.cfg
     k = k or cfg["rag"]["k"]
     year = int(engine.years.max())
     if use_llm_parser:
-        sq, src = llm_parse(question, client, year)
+        sq, src = guarded_llm_parse(question, client, year)
         compiled = sq.compile() or question
     else:
         sq, src, compiled = None, "raw", question

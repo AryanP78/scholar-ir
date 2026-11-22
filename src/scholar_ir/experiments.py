@@ -32,8 +32,8 @@ from .index import champion_lists
 
 log = logging.getLogger("experiments")
 
-MAIN_SYSTEMS = ["S1", "S2", "S3", "S4", "S5", "S6", "S7"]
-ALL_SYSTEMS = ["RAND", "S1", "S2", "S3", "S3L", "S4", "S5", "S6", "S7", "S8"]
+MAIN_SYSTEMS = ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S9", "S10"]
+ALL_SYSTEMS = ["RAND", "S1", "S2", "S3", "S3L", "S4", "S5", "S6", "S7", "S8", "S9", "S10"]
 DEPTH = 100
 
 
@@ -231,6 +231,20 @@ def cmd_tune(cfg, engine) -> None:
     for sysname, auth in (("S4", "A0"), ("S5", "A1"), ("S6", "A2")):
         m = sw[sw.system == sysname].groupby("lambda")["nDCG@10"].mean()
         by_auth[auth] = float(m.idxmax())
+    # 3b. topic-local HITS authority (S9): fixed lambda x blend with A2, DEV only
+    hits_rows, best_h = [], (-1.0, None)
+    for beta in cfg.get("hits", {}).get("grid_blend", [0.5, 1.0]):
+        engine.cfg["hits"]["blend"] = float(beta)
+        for lam in cfg.get("hits", {}).get("grid_lambda", [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]):
+            sc = mean_metric(run(engine, dev, "S9", overrides={"lambda": float(lam)})[0], qrels, dev, rg=rg)
+            hits_rows.append({"blend": beta, "lambda": lam, "nDCG@10": sc})
+            if sc > best_h[0]:
+                best_h = (sc, (float(beta), float(lam)))
+    pd.DataFrame(hits_rows).to_csv(out / "hits_grid_dev.csv", index=False)
+    by_auth["H"] = best_h[1][1]
+    params["hits"] = {"blend": best_h[1][0]}
+    engine.cfg["hits"]["blend"] = best_h[1][0]
+    report["hits_dev_best"] = {"blend": best_h[1][0], "lambda": best_h[1][1], "nDCG@10": best_h[0]}
     params["net_score"]["fixed_lambda_by_authority"] = by_auth
     fig, axes = plt.subplots(1, 2, figsize=(9, 3.4), sharey=True)
     for ax, typ in zip(axes, ("foundational", "recent")):
@@ -532,7 +546,8 @@ def cmd_eval(cfg, engine, skip_ablation_indexes: bool = False) -> None:
 
     # significance on TEST (all, and by type)
     sig = []
-    for a, b in (("S7", "S3"), ("S7", "S4"), ("S7", "S6"), ("S4", "S3"), ("S3", "S1")):
+    for a, b in (("S9", "S3"), ("S9", "S4"), ("S9", "S7"), ("S10", "S3"), ("S10", "S7"),
+                 ("S7", "S3"), ("S7", "S4"), ("S7", "S6"), ("S4", "S3"), ("S3", "S1")):
         for typ in ("all", "foundational", "recent"):
             sub = test if typ == "all" else test[test.type == typ]
             for metric in ("nDCG@10", "P@10", "MAP"):
@@ -559,8 +574,11 @@ def cmd_eval(cfg, engine, skip_ablation_indexes: bool = False) -> None:
         row["median_year@10"] = sc["median_year@10"].median()
         abl.append(row)
 
-    for s in ("S1", "S2", "S3", "S3L", "S4", "S5", "S6", "S7", "S8"):
+    for s in ("S1", "S2", "S3", "S3L", "S4", "S5", "S6", "S7", "S8", "S9", "S10"):
         add(f"{s} {SYSTEMS[s]['label']}", run(engine, queries, s)[0])
+    add("S9 classic (unweighted) HITS", run(engine, queries, "S9", overrides={"hits_weighted": False})[0])
+    add("S9 HITS only (no blend with A2)", run(engine, queries, "S9", overrides={"hits_blend": 1.0})[0])
+    add("S9 classic HITS only", run(engine, queries, "S9", overrides={"hits_weighted": False, "hits_blend": 1.0})[0])
     add("S6 multiplicative net score", run(engine, queries, "S6", overrides={"combine": "multiplicative"})[0])
     add("S7 multiplicative net score", run(engine, queries, "S7", overrides={"combine": "multiplicative"})[0])
     add("BM25F + PageRank-cohort, fixed λ", run(engine, queries, "S8", overrides={"adaptive": False})[0])
@@ -637,13 +655,13 @@ def cmd_citerec(cfg, engine, n_papers: int = 300, n_terms: int = 30, k: int = 20
     out = p(cfg, "results_dir") / "citerec"
     out.mkdir(parents=True, exist_ok=True)
     rows = []
-    systems = ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8"]
+    systems = ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10"]
     for _, r in pool.iterrows():
         d = int(r.doc_id)
         rel = {int(x) for x in r.referenced_doc_ids if int(x) != d}
         pq = abstract_query(engine, d, n_terms)
         for s in systems:
-            res = engine.search(pq, system=s, k=k + 1)
+            res = engine.search(pq, system=s, k=k + 1, overrides={"hits_exclude": d})
             ranked = [x for x in res.doc_ids if x != d][:k]
             rows.append({"doc_id": d, "year": int(engine.years[d]), "system": s, "n_refs_in_corpus": len(rel),
                          f"R@{k}": ev.recall_at(ranked, rel, k), "R@10": ev.recall_at(ranked, rel, 10),
@@ -656,7 +674,8 @@ def cmd_citerec(cfg, engine, n_papers: int = 300, n_terms: int = 30, k: int = 20
     summ.to_csv(out / "citerec_summary.csv", index=False)
     (out / "citerec_summary.md").write_text(to_md(summ))
     sig = []
-    for a, b in (("S7", "S3"), ("S7", "S4"), ("S4", "S3"), ("S3", "S1")):
+    for a, b in (("S9", "S4"), ("S9", "S3"), ("S9", "S7"), ("S10", "S7"), ("S7", "S3"), ("S7", "S4"),
+                 ("S4", "S3"), ("S3", "S1")):
         xa = df[df.system == a].sort_values("doc_id")[f"R@{k}"].to_numpy()
         xb = df[df.system == b].sort_values("doc_id")[f"R@{k}"].to_numpy()
         sig.append({"A": a, "B": b, "metric": f"R@{k}", **ev.paired_bootstrap(xa, xb, cfg["evaluation"]["bootstrap_samples"], cfg["seed"]),
